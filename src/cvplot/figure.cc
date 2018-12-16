@@ -4,6 +4,15 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
+
+std::string toString(double d) {
+    int precision=0;
+    std::ostringstream ss;
+    ss << std::fixed << std::setprecision(precision);
+    ss << d;
+    return ss.str();
+}
+
 namespace cvplot {
 
 namespace {
@@ -186,6 +195,11 @@ Series &Series::set(const std::vector<std::pair<float, Point2>> &data) {
   return add(data);
 }
 
+/**
+ * @data 1st pt-x value in plot
+ *       2nd pt-y value in plot
+ *       3rd pt- label of the point
+ */
 Series &Series::set(const std::vector<std::pair<float, Point3>> &data) {
   clear();
   return add(data);
@@ -376,10 +390,8 @@ void Series::draw(void *b, float x_min, float x_max, float y_min, float y_max,
       bool has_last = false;
       float last_x, last_y;
       for (const auto &e : entries_) {
-        auto x = data_[e], y = data_[e + dims_];
-        if (dynamic_color_) {
-          color = color2scalar(Color::cos(data_[e + dims_ + 1]));
-        }
+        auto x = data_[e], y = data_[e + dims_], z = data_[e + dims_+1];
+        
         cv::Point point((int)(x * xs + xd), (int)(y * ys + yd));
         if (has_last) {
           if (type_ == DotLine || type_ == Line || type_ == FillLine ||
@@ -393,6 +405,9 @@ void Series::draw(void *b, float x_min, float x_max, float y_min, float y_max,
         }
         if (type_ == DotLine || type_ == Dots) {
           cv::circle(trans.with(color_), point, 2, color, 1, cv::LINE_AA);
+           drawMarker(trans.with(color_), point, cv::Scalar(0, 0, 255), cv::MARKER_CROSS, 10, 1);
+            putText(trans.with(color_), toString(round(z)),cv::Point(point.x+2,point.y),
+                        cv::FONT_HERSHEY_PLAIN, 1, cvScalar(0, 0, 0), 1, cv::LINE_8);
         }
         last_x = x, last_y = y;
       }
