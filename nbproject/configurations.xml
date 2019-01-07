@@ -60,6 +60,16 @@
           <buildCommand>${MAKE} -f Makefile</buildCommand>
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>build/CMakeFiles/CMakeTmp</pElem>
+            </incDir>
+          </cTool>
+          <ccTool>
+            <incDir>
+              <pElem>build/CMakeFiles/CMakeTmp</pElem>
+            </incDir>
+          </ccTool>
         </makeTool>
         <preBuild>
           <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
@@ -103,18 +113,6 @@
           </incDir>
         </ccTool>
       </item>
-      <folder path="usr/share/cmake-3.5/Modules">
-        <cTool>
-          <incDir>
-            <pElem>build/CMakeFiles/CMakeTmp</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>build/CMakeFiles/CMakeTmp</pElem>
-          </incDir>
-        </ccTool>
-      </folder>
     </conf>
   </confs>
 </configurationDescriptor>

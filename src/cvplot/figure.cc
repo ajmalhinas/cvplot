@@ -412,11 +412,15 @@ namespace cvplot {
                 float last_x, last_y;
                 for (const auto &e : entries_) {
                     auto x = data_[e], y = data_[e + dims_], z = data_[e + dims_ + 2];
-                    float hasVote=data_[e + dims_ + 1];
-                    auto crossColor=cv::Scalar(0, 0, 0);
-                    if(hasVote>0){  
-                        crossColor=cv::Scalar(0, 0, 255);
-                    }                    
+                    int type=(int)data_[e + dims_ + 1];
+                    auto crossColor=cv::Scalar(255, 77, 79);
+                    if(type==1){  
+                        crossColor=cv::Scalar(0, 255, 0);
+                    }else if(type==2){
+                         crossColor=cv::Scalar(255, 0, 0);
+                    }else if(type==3){
+                         crossColor=cv::Scalar(0, 0, 255);
+                    }                       
                     cv::Point point((int) (x * xs + xd), (int) (y * ys + yd));
                     if (has_last) {
                         if (type_ == DotLine || type_ == Line || type_ == FillLine ||
@@ -428,7 +432,7 @@ namespace cvplot {
                         has_last = true;
                     }
                     if (type_ == DotLine || type_ == Dots) {
-                        cv::circle(trans.with(color_), point, 2, color, 1, cv::LINE_AA);
+                        cv::circle(trans.with(color_), point, 2, crossColor, 1, cv::LINE_AA);
                         drawMarker(trans.with(color_), point, crossColor, cv::MARKER_CROSS, 10, 1);
                         putText(trans.with(color_), toString(round(z)), cv::Point(point.x + 2, point.y),
                                 cv::FONT_HERSHEY_PLAIN, 1, cvScalar(0, 0, 0), 1, cv::LINE_8);
