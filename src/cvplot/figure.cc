@@ -165,17 +165,20 @@ namespace cvplot {
 
     Series &Series::add(float key, float value) {
         return add(std::vector<std::pair<float, float>>({
-            {key, value}}));
+            {key, value}
+        }));
     }
 
     Series &Series::add(float key, Point2 value) {
         return add(std::vector<std::pair<float, Point2 >> ({
-            {key, value}}));
+            {key, value}
+        }));
     }
 
     Series &Series::add(float key, Point3 value) {
         return add(std::vector<std::pair<float, Point3 >> ({
-            {key, value}}));
+            {key, value}
+        }));
     }
 
     Series &Series::addValue(float value) {
@@ -184,12 +187,14 @@ namespace cvplot {
 
     Series &Series::addValue(float value_a, float value_b) {
         return addValue(std::vector<Point2>({
-            {value_a, value_b}}));
+            {value_a, value_b}
+        }));
     }
 
     Series &Series::addValue(float value_a, float value_b, float value_c) {
         return addValue(std::vector<Point3>({
-            {value_a, value_b, value_c}}));
+            {value_a, value_b, value_c}
+        }));
     }
 
     Series &Series::set(const std::vector<std::pair<float, float>> &data) {
@@ -245,20 +250,23 @@ namespace cvplot {
 
     Series &Series::set(float key, float value) {
         return set(std::vector<std::pair<float, float>>({
-            {key, value}}));
+            {key, value}
+        }));
     }
 
     Series &Series::set(float key, float value_a, float value_b) {
         return set(
                 std::vector<std::pair<float, Point2 >> ({
             {key,
-                {value_a, value_b}}}));
+                {value_a, value_b}}
+        }));
     }
 
     Series &Series::set(float key, float value_a, float value_b, float value_c) {
         return set(std::vector<std::pair<float, Point3 >> ({
             {key,
-                {value_a, value_b, value_c}}}));
+                {value_a, value_b, value_c}}
+        }));
     }
 
     Series &Series::setValue(float value) {
@@ -267,12 +275,14 @@ namespace cvplot {
 
     Series &Series::setValue(float value_a, float value_b) {
         return setValue(std::vector<Point2>({
-            {value_a, value_b}}));
+            {value_a, value_b}
+        }));
     }
 
     Series &Series::setValue(float value_a, float value_b, float value_c) {
         return setValue(std::vector<Point3>({
-            {value_a, value_b, value_c}}));
+            {value_a, value_b, value_c}
+        }));
     }
 
     const std::string &Series::label() const {
@@ -410,18 +420,32 @@ namespace cvplot {
                 }
                 bool has_last = false;
                 float last_x, last_y;
+                std::vector<cv::Point> corners4;
                 for (const auto &e : entries_) {
                     auto x = data_[e], y = data_[e + dims_], z = data_[e + dims_ + 2];
-                    int type=(int)data_[e + dims_ + 1];
-                    auto crossColor=cv::Scalar(255, 77, 79);
-                    if(type==1){  
-                        crossColor=cv::Scalar(0, 255, 0);
-                    }else if(type==2){
-                         crossColor=cv::Scalar(255, 0, 0);
-                    }else if(type==3){
-                         crossColor=cv::Scalar(0, 0, 255);
-                    }                       
+                    int pntType = (int) data_[e + dims_ + 1];
+
                     cv::Point point((int) (x * xs + xd), (int) (y * ys + yd));
+                    auto crossColor = cv::Scalar(255, 77, 79);
+                    if (pntType == 1) {
+                        crossColor = cv::Scalar(0, 255, 0);
+                    } else if (pntType == 2) {
+                        crossColor = cv::Scalar(255, 0, 0);
+                    } else if (pntType == 3) {
+                        crossColor = cv::Scalar(0, 0, 255);
+                    } else if (pntType == 4) { //indidates FOV in ground
+                        
+                        auto lineColor = cv::Scalar(100, 0, 155);
+                        corners4.push_back(point);
+                        for (int i = 0; corners4.size() == 4 && i < 4; i++) {
+                            cv::line(trans.with(color_), corners4.at(i), corners4.at((i + 1) % 4),
+                                    lineColor, 1, cv::LINE_8);
+
+                        }
+
+
+                    }
+
                     if (has_last) {
                         if (type_ == DotLine || type_ == Line || type_ == FillLine ||
                                 type_ == RangeLine) {
@@ -431,7 +455,7 @@ namespace cvplot {
                     } else {
                         has_last = true;
                     }
-                    if (type_ == DotLine || type_ == Dots) {
+                    if (pntType<4 && (type_ == DotLine || type_ == Dots)) {
                         cv::circle(trans.with(color_), point, 2, crossColor, 1, cv::LINE_AA);
                         drawMarker(trans.with(color_), point, crossColor, cv::MARKER_CROSS, 10, 1);
                         putText(trans.with(color_), toString(round(z)), cv::Point(point.x + 2, point.y),
@@ -440,7 +464,7 @@ namespace cvplot {
                     last_x = x, last_y = y;
                 }
             }
-            break;
+                break;
             case Vistogram:
             case Histogram:
             {
@@ -467,7 +491,7 @@ namespace cvplot {
                 }
 
             }
-            break;
+                break;
             case Horizontal:
             case Vertical:
             {
@@ -491,7 +515,7 @@ namespace cvplot {
                     }
                 }
             }
-            break;
+                break;
             case Range:
             {
                 bool has_last = false;
@@ -512,7 +536,7 @@ namespace cvplot {
                     last_a = point_a, last_b = point_b;
                 }
             }
-            break;
+                break;
             case Circle:
             {
                 for (const auto &e : entries_) {
@@ -524,7 +548,7 @@ namespace cvplot {
                     cv::circle(trans.with(color_), point, r, color, -1, cv::LINE_AA);
                 }
             }
-            break;
+                break;
         }
     }
 
