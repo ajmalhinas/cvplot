@@ -420,7 +420,7 @@ namespace cvplot {
                 }
                 bool has_last = false;
                 float last_x, last_y;
-                std::vector<cv::Point> corners4;
+                std::vector<cv::Point> linePnts;
                 for (const auto &e : entries_) {
                     auto x = data_[e], y = data_[e + dims_], z = data_[e + dims_ + 2];
                     int pntType = (int) data_[e + dims_ + 1];
@@ -434,16 +434,30 @@ namespace cvplot {
                     } else if (pntType == 3) {
                         crossColor = cv::Scalar(0, 0, 255);
                     } else if (pntType == 4) { //indidates FOV in ground
-                        
+
                         auto lineColor = cv::Scalar(100, 0, 155);
-                        corners4.push_back(point);
-                        for (int i = 0; corners4.size() == 4 && i < 4; i++) {
-                            cv::line(trans.with(color_), corners4.at(i), corners4.at((i + 1) % 4),
+                        linePnts.push_back(point);
+                        for (int i = 0; linePnts.size() == 4 && i < 4; i++) {
+                            cv::line(trans.with(color_), linePnts.at(i), linePnts.at((i + 1) % 4),
                                     lineColor, 1, cv::LINE_8);
 
                         }
 
+                    } else if (pntType == 5 || pntType == 6 || pntType == 7) { //draw edges of a node 5- base node 6-edges 7-last edge
 
+                        auto lineColor = cv::Scalar(100, 0, 155);
+                        linePnts.push_back(point);
+
+                        for (int i = 1; pntType == 7 && i < linePnts.size(); i++) {
+                            cv::line(trans.with(color_), linePnts.at(0), linePnts.at((i)),
+                                    lineColor, 1, cv::LINE_8);
+                            if(i==linePnts.size()-1){
+                                linePnts.clear();
+                            }
+                        }
+                        if (pntType==5) {
+                            crossColor = cv::Scalar(0, 0, 255);
+                        }
                     }
 
                     if (has_last) {
@@ -455,9 +469,12 @@ namespace cvplot {
                     } else {
                         has_last = true;
                     }
-                    if (pntType<4 && (type_ == DotLine || type_ == Dots)) {
-                        cv::circle(trans.with(color_), point, 2, crossColor, 1, cv::LINE_AA);
-                        drawMarker(trans.with(color_), point, crossColor, cv::MARKER_CROSS, 10, 1);
+                    if ((type_ == DotLine || type_ == Dots)) {
+                        if (pntType == 2) {
+                            cv::circle(trans.with(color_), point, 4, crossColor, 1, cv::LINE_AA);
+                        } else {
+                            drawMarker(trans.with(color_), point, crossColor, cv::MARKER_CROSS, 10, 1);
+                        }
                         putText(trans.with(color_), toString(round(z)), cv::Point(point.x + 2, point.y),
                                 cv::FONT_HERSHEY_PLAIN, 1, cvScalar(0, 0, 0), 1, cv::LINE_8);
                     }
