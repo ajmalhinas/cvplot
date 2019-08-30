@@ -475,8 +475,8 @@ namespace cvplot {
                         } else {
                             drawMarker(trans.with(color_), point, crossColor, cv::MARKER_CROSS, 10, 1);
                         }
-                        putText(trans.with(color_), toString(round(z)), cv::Point(point.x + 2, point.y),
-                                cv::FONT_HERSHEY_PLAIN, 1, cvScalar(0, 0, 0), 1, cv::LINE_8);
+//                        putText(trans.with(color_), toString(round(z)), cv::Point(point.x + 2, point.y),
+//                                cv::FONT_HERSHEY_PLAIN, 1, cvScalar(0, 0, 0), 1, cv::LINE_8);
                     }
                     last_x = x, last_y = y;
                 }
